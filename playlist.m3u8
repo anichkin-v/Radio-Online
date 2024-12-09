@@ -1,0 +1,6 @@
+#EXTM3U
+#PLAYLIST:Radio OnLine
+
+#EXTGRP:Радио России
+#EXTINF:-1 tvg-logo="./logo_st/7radio.png" group-title="Радио России", Радио 7 на семи холмах
+https://hls-01-regions.emgsound.ru/13_msk/playlist.m3u8
