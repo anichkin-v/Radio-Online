@@ -1,0 +1,249 @@
+body {
+    background-color: #121212;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.radio-player-container {
+    width: 100vh;
+    max-width: 340px;
+    height: auto;
+    text-align: center;
+    margin-top: -10px;
+}
+
+h1 {
+    color: #00bfff;
+    text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff; /* Эффект свечения */
+    margin: 10px 0;
+    font-size: 36px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+h2 {
+    color: white;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin: 20px 0 10px; /* Отступы для заголовка списка */
+}
+
+.radio-player {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    max-height: 90vh;
+    background-color: #1c1c1c;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.radio-logo {
+    width: 95%;
+    height: 280px;
+    margin: 0 auto;
+    border-radius: 5px;
+    background-color: #333;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.controls {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.controls button {
+    background-color: transparent; /* Старая версия: фон кнопок прозрачный */
+    border: none; /* Убираем обводку */
+    cursor: pointer;
+    color: white;
+    font-size: 30px;
+}
+
+.controls button:hover {
+    color: #00bfff; /* Цвет текста при наведении */
+}
+
+.station-name {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    font-size: 22px;
+    text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff;
+    color: #00bfff;
+}
+
+.station-list {
+    position: relative;
+    margin-top: 20px;
+    max-height: 280px;
+    overflow-y: auto;
+    border-radius: 10px; /* Округленные углы */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Добавляем тень */
+    padding: 10px 0; /* Отступы для списка */
+}
+
+.station-list h2 {
+    position: sticky;
+    top: -12px;
+    left: 0;
+    right: 0;
+    background-color: #1c1c1c; /* Более темный фон заголовка */
+    padding: 15px 20px 15px;
+    z-index: 1;
+    border-top-left-radius: 10px; /* Округленные верхние углы */
+    border-top-right-radius: 10px; /* Округленные верхние углы */
+}
+
+.station-list ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column; /* Выравнивание элементов в столбик */
+    gap: 10px; /* Отступы между элементами */
+}
+
+.station-list li {
+    display: flex;
+    align-items: center;
+    background: #444; /* Фон элементов списка */
+    border-radius: 10px; /* Округленные углы */
+    padding: 10px; /* Отступы */
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s; /* Плавный переход */
+    position: relative; /* Для абсолютного позиционирования псевдоэлемента */
+    overflow: hidden; /* Скрыть элементы, выходящие за рамки */
+}
+
+.station-list li:hover {
+    transform: translateY(-5px); /* Эффект поднятия при наведении */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Тень при наведении */
+}
+
+.station-list li.active {
+    background-color: #1e88e5; /* Цвет активной станции */
+    color: white;
+}
+
+.station-logo {
+    width: 50px; /* Увеличение размера логотипа */
+    height: 50px; /* Увеличение размера логотипа */
+    border-radius: 50%;
+    margin-right: 10px;
+    background-color: #666; /* Цвет фона для логотипа */
+    background-size: cover;
+    transition: transform 0.3s; /* Плавный переход для логотипа */
+}
+
+.station-list li:hover .station-logo {
+    transform: scale(1.1); /* Увеличение логотипа при наведении */
+}
+
+@media (max-width: 480px) {
+    .radio-player {
+        max-width: 100%;
+        height: auto;
+        padding: 15px;
+    }
+
+    .radio-logo {
+        height: 230px;
+    }
+
+    .controls button {
+        font-size: 24px;
+    }
+
+    .station-name {
+        font-size: 18px;
+    }
+
+    .station-logo {
+        width: 30px; /* Уменьшение размера логотипа для мобильных */
+        height: 30px; /* Уменьшение размера логотипа для мобильных */
+    }
+}
+.categories-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.categories-row {
+    display: flex;
+    flex-direction: row; /* Горизонтальное размещение категорий */
+    overflow-x: auto; /* Горизонтальный скролл */
+    gap: 15px; /* Расстояние между категориями */
+}
+
+.category {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    flex-shrink: 0; /* Запрещаем сжатие категорий */
+    text-align: center;
+    min-width: 150px; /* Минимальная ширина для категории */
+}
+
+.category-title {
+    font-size: 1.2rem;
+    color: #fcfcfc;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.station-list {
+    display: flex;
+    flex-wrap: nowrap; /* Не разрешаем перенос станций */
+    gap: 10px; /* Расстояние между станциями */
+    overflow-x: auto; /* Горизонтальный скролл для списка станций */
+    padding: 0;
+    list-style: none;
+    justify-content: start;
+}
+
+.station-card {
+    width: 120px; /* Ширина карточки */
+    height: 140px; /* Высота карточки */
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease;
+    min-width: 100px; /* Минимальная ширина */
+    min-height: 120px; /* Минимальная высота */
+    flex-shrink: 0; /* Запрещаем сжимать карточки */
+}
+
+.station-logo-small {
+    width: 80px;
+    height: 80px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+}
+
+.card-body {
+    padding: 5px;
+    font-size: 0.9rem;
+}

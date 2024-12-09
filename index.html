@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="RADIO OnLine - наслаждайтесь любимыми радиостанциями онлайн. Бесплатный радио-плеер без регистрации.">
+
+    <!-- SEO -->
+    <meta name="keywords" content="радио, онлайн радио, web radio, интернет радио, музыкальные станции, радио онлайн, плеер радио">
+    <meta name="author" content="RADIO OnLine Inc.">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph (OG) - для социальных сетей -->
+    <meta property="og:title" content="RADIO OnLine - Слушайте Радио Онлайн">
+    <meta property="og:description" content="Наслаждайтесь любимыми радиостанциями онлайн через RADIO OnLine. Бесплатно, без регистрации.">
+    <meta property="og:image" content="./logo_st/og-image.png">
+    <meta property="og:url" content="http://domain">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="RADIO OnLine - Радио Онлайн">
+    <meta name="twitter:description" content="Наслаждайтесь радиостанциями онлайн с RADIO OnLine. Бесплатно, без регистрации.">
+    <meta name="twitter:image" content="./logo_st/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" href="./logo_st/favicon.ico" sizes="48x48">
+    <link rel="apple-touch-icon" href="./logo_st/apple-touch-icon.png"/>
+    <link rel="manifest" href="./logo_st/manifest.webmanifest"/>
+
+    <!-- Theme color for mobile browsers -->
+    <meta name="theme-color" content="#181818">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- JSON-LD structured data for SEO -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "url": "http://domain",
+            "name": "RADIO OnLine",
+            "description": "Наслаждайтесь лучшими радиостанциями онлайн с RADIO OnLine. Бесплатно и без регистрации.",
+            "sameAs": [
+                "https://www.facebook.com",
+                "https://twitter.com",
+                "https://www.instagram.com"
+            ],
+            "image": "./logo_st/og-image.png",
+            "author": {
+                "@type": "Organization",
+                "name": "RADIO OnLine Inc."
+            }
+        }
+    </script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+     <link href="./css/player.css" rel="stylesheet">
+    <title>Radio OnLine</title>
+</head>
+<body>
+<div class="player">
+    <!-- Dashboard -->
+    <div class="dashboard">
+        <!-- Header -->
+        <header>
+            <h4>Сейчас работает:</h4>
+            <h2>Radio OnLine</h2>
+        </header>
+
+        <!-- Cover -->
+        <div class="cover">
+            <div class="cover-thumb" style="background-image: url('./logo_st/og-image.png');"></div>
+        </div>
+
+        <!-- Control -->
+        <div class="control">
+            <div class="btn btn-prev">
+                <i class="fas fa-step-backward"></i>
+            </div>
+            <div class="btn btn-toggle-play">
+                <i class="fas fa-pause icon-pause"></i>
+                <i class="fas fa-play icon-play"></i>
+            </div>
+            <div class="btn btn-next">
+                <i class="fas fa-step-forward"></i>
+            </div>
+        </div>
+        <audio id="audio" src=""></audio>
+    </div>
+    
+    <!-- Playlist -->
+    <div class="playlist"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const $ = document.querySelector.bind(document);
+        const $$ = document.querySelectorAll.bind(document);
+
+        // Определение элементов управления
+        const dashboard = $(".dashboard");
+        const playBtn = $(".btn-toggle-play");
+        const audio = $("#audio");
+        const heading = $("header h2");
+        const coverThumb = $(".cover-thumb");
+        const playlist = $(".playlist");
+        const nextBtn = $(".btn-next");
+        const prevBtn = $(".btn-prev");
+        const randomBtn = $(".btn-random");
+        const repeatBtn = $(".btn-repeat");
+
+        let hls = null;
+
+        const app = {
+            currentIndex: null, // Индекс текущей станции
+            isPlaying: false,
+            isRandom: false,
+            isRepeat: false,
+            stations: [], // Массив радиостанций
+
+            // Функция отрисовки списка радиостанций
+            render() {
+                const groups = this.stations.reduce((acc, station) => {
+                    if (!acc[station.group]) acc[station.group] = [];
+                    acc[station.group].push(station);
+                    return acc;
+                }, {});
+
+                let htmls = '';
+                for (const group in groups) {
+                    htmls += `
+                    <div class="group">
+                        <h3>${group}</h3>
+                        ${groups[group].map(station => `
+                            <div class="station" data-index="${this.stations.indexOf(station)}">
+                                <div class="thumb" style="background-image: url('${station.image}')"></div>
+                                <div class="body">
+                                    <h3>${station.name}</h3>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+                }
+                playlist.innerHTML = htmls;
+            },
+
+            // Обработка событий
+            handleEvents() {
+                const _this = this;
+
+                // Обработчик клика по станции
+                playlist.addEventListener("click", function (e) {
+                    const stationNode = e.target.closest(".station");
+                    if (stationNode && !stationNode.classList.contains("active")) {
+                        const newIndex = Number(stationNode.dataset.index);
+                        if (_this.currentIndex !== newIndex) {
+                            _this.stopCurrentStream(); // Остановить текущий поток
+                            _this.currentIndex = newIndex;
+                            _this.loadCurrentStation();
+                            _this.showDashboard();
+                            audio.play();
+                        }
+                    }
+                });
+
+                // Обработчик кнопки play/pause
+                playBtn.addEventListener("click", function () {
+                    if (_this.currentIndex !== null) {
+                        _this.isPlaying ? audio.pause() : audio.play();
+                    }
+                });
+
+                // Обработка кнопок навигации "Следующий" и "Предыдущий"
+                nextBtn.addEventListener("click", function () {
+                    _this.nextStation();
+                });
+
+                prevBtn.addEventListener("click", function () {
+                    _this.prevStation();
+                });
+
+                // Воспроизведение и пауза
+                audio.addEventListener("play", function () {
+                    _this.isPlaying = true;
+                    playBtn.classList.add("playing");
+                });
+
+                audio.addEventListener("pause", function () {
+                    _this.isPlaying = false;
+                    playBtn.classList.remove("playing");
+                });
+            },
+
+            // Отображение панели управления
+            showDashboard() {
+                if (dashboard.classList.contains("hidden")) {
+                    dashboard.classList.remove("hidden");
+                    this.updatePlaylistMargin();
+                }
+            },
+
+            // Обновление отступа списка станций
+            updatePlaylistMargin() {
+                const dashboardHeight = dashboard.offsetHeight;
+                playlist.style.marginTop = `${dashboardHeight}px`;
+            },
+
+            // Загрузка текущей станции
+            loadCurrentStation() {
+                if (this.currentIndex !== null && this.stations[this.currentIndex]) {
+                    const currentStation = this.stations[this.currentIndex];
+                    heading.textContent = currentStation.name || "Unknown";
+                    coverThumb.style.backgroundImage = `url('${currentStation.image || ''}')`;
+
+                    // Воспроизведение потока
+                    this.playStream(currentStation.path);
+
+                    // Обновление активного состояния
+                    $$(".station.active").forEach(station => station.classList.remove("active"));
+                    const activeStation = $(`.station[data-index="${this.currentIndex}"]`);
+                    activeStation?.classList.add("active");
+                    activeStation?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            },
+
+            // Воспроизведение потока
+            playStream(url) {
+                this.stopCurrentStream();
+
+                if (Hls.isSupported() && url.endsWith(".m3u8")) {
+                    hls = new Hls();
+                    hls.loadSource(url);
+                    hls.attachMedia(audio);
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                        audio.play();
+                    });
+                } else {
+                    audio.src = url;
+                    audio.load();
+                    audio.play();
+                }
+            },
+
+            // Остановить текущий поток
+            stopCurrentStream() {
+                if (hls) {
+                    hls.destroy();  // Уничтожаем объект HLS
+                    hls = null;
+                }
+                audio.pause(); // Останавливаем воспроизведение на элементе audio
+                audio.src = ""; // Сброс URL источника
+            },
+
+            // Функция перехода к следующей станции
+            nextStation() {
+                if (this.currentIndex !== null) {
+                    this.currentIndex = (this.currentIndex + 1) % this.stations.length;
+                    this.loadCurrentStation();
+                    audio.play();
+                }
+            },
+
+            // Функция перехода к предыдущей станции
+            prevStation() {
+                if (this.currentIndex !== null) {
+                    this.currentIndex = (this.currentIndex - 1 + this.stations.length) % this.stations.length;
+                    this.loadCurrentStation();
+                    audio.play();
+                }
+            },
+
+            // Загрузка плейлиста из M3U8
+            loadPlaylistFromM3U8(url) {
+                fetch(url)
+                    .then(response => response.text())
+                    .then(data => {
+                        const lines = data.split("\n");
+                        let currentStation = null;
+
+                        lines.forEach(line => {
+                            if (line.startsWith("#EXTINF:")) {
+                                const info = line.split(",");
+                                const name = info[1] || "Unknown";
+                                const group = line.match(/group-title="([^"]+)"/)?.[1] || "Uncategorized";
+                                const image = line.match(/tvg-logo="([^"]+)"/)?.[1] || "";
+                                currentStation = { name, group, image };
+                            } else if (line.startsWith("http")) {
+                                if (currentStation) {
+                                    currentStation.path = line;
+                                    this.stations.push(currentStation);
+                                    currentStation = null;
+                                }
+                            }
+                        });
+
+                        this.render();
+                    })
+                    .catch(err => console.error("Error loading playlist:", err));
+            },
+
+            start() {
+                dashboard.classList.add("hidden"); // Изначально скрываем дашборд
+                this.handleEvents();
+                this.loadPlaylistFromM3U8("playlist.m3u8");
+            }
+        };
+
+        app.start();
+    });
+</script>
+</body>
+</html>
